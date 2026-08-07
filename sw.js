@@ -34,6 +34,7 @@ const NOYAU = [
   './assets/ge3-backend.js',
   './assets/ge3-saisie-cloud.js',
   './assets/ge3-droits.js',
+  './assets/ge3-admin.js',
 ];
 
 self.addEventListener('install', (e) => {
