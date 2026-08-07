@@ -8,9 +8,7 @@ autour de l'élève et de la hiérarchie administrative :
 
 | Fichier | Description |
 |---------|-------------|
-| **`plateforme.html`** | Version **autonome** (hors-ligne). Toutes les données restent dans le navigateur (localStorage). Aucune installation, aucun serveur. |
-| **`plateforme-cloud.html`** | Version **connectée** à une base de données centrale Supabase : authentification réelle, données partagées entre tous les appareils, sécurité par rôle. |
-| `index.html` | Page d'accueil : liens vers les deux versions. |
+| **`index.html`** | La plateforme, **connectée** à une base de données centrale Supabase : authentification réelle, données partagées entre tous les appareils, sécurité par rôle. |
 
 ## Modules
 
@@ -22,13 +20,11 @@ Conversion PDF → tableau · Impression en masse (bulletins, cartes).
 
 ## Utilisation
 
-### Version locale
-Ouvrir `plateforme.html` dans un navigateur. Compte de départ : `admin` / `admin`.
+Ouvrir la plateforme dans un navigateur — connexion Internet requise. La configuration
+Supabase (URL + clé publique) est intégrée dans le fichier. L'administrateur crée la
+hiérarchie, les directeurs créent les enseignants, les enseignants enrôlent les élèves.
 
-### Version cloud
-Ouvrir `plateforme-cloud.html` (connexion Internet requise). La configuration Supabase
-(URL + clé publique) est intégrée dans le fichier. L'administrateur crée la hiérarchie,
-les directeurs créent les enseignants, les enseignants enrôlent les élèves.
+En ligne : <https://ge3.vercel.app>
 
 ## Architecture cloud (Supabase)
 
