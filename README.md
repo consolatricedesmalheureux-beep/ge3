@@ -25,6 +25,7 @@ elle est constatée. Toutes les consolidations en découlent automatiquement : a
 | `assets/ge3-droits.js` | Matrice des droits d'accès (cahier des charges §5.1) |
 | `assets/ge3-sync.js` | Synchronisation incrémentale et résolution des conflits |
 | `assets/ge3-admin.js` | Module ⑰ Administration : comptes et habilitations |
+| `assets/ge3-syntheses.js` | Modules ⑬ et ⑭ : consolidation calculée, appréciation rédigée |
 | `sw.js` | Service worker : fonctionnement hors connexion |
 | `manifest.webmanifest`, `icons/` | Installation sur l'appareil |
 
@@ -128,7 +129,6 @@ Ces choix sont réversibles.
   autorisées, statut du compte. La gestion des comptes est faite (module ⑰).
 - Base locale dans l'appareil, en remplacement de `localStorage` (§10.1).
 - Migration relationnelle des modules ② à ⑯.
-- Modules 13 et 14 alimentés par les vues de consolidation plutôt que saisis.
 - Journalisation effective des consultations de données personnelles.
 
 ## Licence
