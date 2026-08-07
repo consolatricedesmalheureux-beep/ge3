@@ -47,6 +47,10 @@
   };
   window.GE3 = GE3;
 
+  /* Exposé pour le moteur de synchronisation, qui doit appliquer exactement
+     le même périmètre de clés. */
+  GE3.estSynchronisable = (cle) => estSynchronisable(cle);
+
   /* ───────────────────────── Identifiant → e-mail ─────────────────────────
      Les utilisateurs saisissent « Admin », pas une adresse e-mail. La même
      convention que la version cloud est conservée. */
@@ -125,6 +129,7 @@
 
     localStorage.setItem = function (cle, valeur) {
       setItemOriginal(cle, valeur);
+      if (GE3.sync) return; // le moteur versionné a pris le relais
       if (estSynchronisable(cle)) {
         if (GE3.session) {
           pousser(cle, valeur).catch(() => empiler(cle, valeur));
@@ -279,8 +284,14 @@
     }
 
     msg('Chargement de vos données…', false);
-    const n = await restaurer();
-    await viderFile();
+    /* Quand le moteur versionné est présent, c'est lui qui rapatrie et
+       rejoue : le faire ici aussi provoquerait des doubles écritures et des
+       conflits fabriqués de toutes pièces. */
+    let n = 0;
+    if (!GE3.sync) {
+      n = await restaurer();
+      await viderFile();
+    }
     afficherApplication();
     majEtat(n ? '☁️ ' + n + ' élément(s) chargé(s)' : '☁️ synchronisé');
   }
