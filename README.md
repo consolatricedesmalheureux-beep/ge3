@@ -10,7 +10,7 @@ autour de l'élève et de la hiérarchie administrative :
 |---------|-------------|
 | **`plateforme.html`** | Version **autonome** (hors-ligne). Toutes les données restent dans le navigateur (localStorage). Aucune installation, aucun serveur. |
 | **`plateforme-cloud.html`** | Version **connectée** à une base de données centrale Supabase : authentification réelle, données partagées entre tous les appareils, sécurité par rôle. |
-| `index.html` | Ancienne version monolithique (conservée pour référence). |
+| `index.html` | Page d'accueil : liens vers les deux versions. |
 
 ## Modules
 
