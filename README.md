@@ -1,35 +1,117 @@
 # Gestionnaire d'Évaluation — GE 3.0
 
-Plateforme de gestion scolaire pour l'enseignement primaire (Bénin), organisée
-autour de l'élève et de la hiérarchie administrative :
-**Ministère → DDEMP → Circonscription Scolaire → École / Directeur → Enseignant → Élève**.
+Plateforme hiérarchisée de gestion scolaire pour l'enseignement primaire (Bénin).
+Seize modules, six profils, remontée automatique des données de l'enseignant au ministère.
 
-## Contenu du dépôt
-
-| Fichier | Description |
-|---------|-------------|
-| **`index.html`** | La plateforme complète (16 modules). Données stockées localement dans le navigateur (localStorage). Accès libre, sans code ni compte. |
-
-## Modules
-
-Saisie des notes · Bulletins · Statistiques & analyses · Bilan de passage ·
-Examen blanc CEP · Relevé de notes CEP · Fiche d'inscription CEP · Carte scolaire ·
-Cantine · Présences · Relevés mensuels · Tableau d'affichage · Enrôlement des élèves ·
-Synthèses École / Circonscription / DDEMP / National · Export CSV & Excel ·
-Conversion PDF → tableau · Impression en masse (bulletins, cartes).
-
-## Utilisation
-
-Ouvrir la plateforme dans un navigateur. L'application s'ouvre directement, sans code
-d'accès ni compte.
+Conception fonctionnelle : MAÎTRE MARIANO.
+Référence : *Cahier des charges — Plateforme hiérarchisée de gestion scolaire* et
+*Notes conceptuelles des modules 1 à 16*.
 
 En ligne : <https://ge3.vercel.app>
 
-## Stockage des données
+## Principe directeur
 
-Toutes les données (notes, élèves, signatures, cantine…) sont enregistrées dans le
-`localStorage` du navigateur. Elles restent donc sur l'appareil : rien n'est partagé
-entre postes, et vider les données du navigateur les efface.
+**La saisie unique.** Une donnée n'est renseignée qu'une seule fois, au niveau où
+elle est constatée. Toutes les consolidations en découlent automatiquement : aucun
+échelon supérieur ne ressaisit ce qu'un échelon inférieur a déjà enregistré.
+
+## Contenu du dépôt
+
+| Fichier | Rôle |
+|---|---|
+| `index.html` | L'application : 16 modules, génération PDF, imports/exports Excel, signatures |
+| `assets/ge3-backend.js` | Authentification, session, stockage cloud, file d'attente hors ligne |
+| `assets/ge3-saisie-cloud.js` | Module ① branché sur les tables relationnelles |
+| `assets/ge3-droits.js` | Matrice des droits d'accès (cahier des charges §5.1) |
+| `sw.js` | Service worker : fonctionnement hors connexion |
+| `manifest.webmanifest`, `icons/` | Installation sur l'appareil |
+
+## Les six profils
+
+| Niveau | Profil | Périmètre |
+|---|---|---|
+| 1 | Enseignant | Sa classe |
+| 2 | Directeur d'école | Toutes les classes de son école |
+| 3 | Responsable d'unité pédagogique | Les écoles de son unité |
+| 4 | Circonscription scolaire | Toutes les écoles de son ressort |
+| 5 | DDEMP | Toutes les CS de son département |
+| 6 | MEMP | Vision nationale |
+
+Un profil `admin` administre la plateforme et n'appartient pas à la hiérarchie.
+
+Chaque utilisateur ne voit que les modules relevant de ses attributions : les
+fonctions inaccessibles sont **absentes de la navigation**, non désactivées (§4.4).
+Enseignant 11 modules, directeur 16, circonscription 16, DDEMP 14, MEMP 12.
+
+## Modèle de données
+
+La hiérarchie administrative est reflétée dans le schéma (§10.3) :
+
+```
+MEMP → DDEMP → Circonscription → Unité pédagogique → École → Classe → Élève
+```
+
+- `annees_scolaires` — l'année est une dimension à part entière ; une seule active.
+- `ups`, `classes` — entités introduites pour respecter le §10.3.
+- `eleves` — identifié par son **NPI** ; le rang dans la liste sert de secours et
+  distingue deux homonymes d'une même classe.
+- `evaluations`, `notes` — une ligne par note ; validation et signature tracées.
+- `parametres` — seuil de réussite et paramètres nationaux.
+- `journal` — traçabilité des saisies et modifications (§7.4).
+
+## Sécurité des accès
+
+Le contrôle des droits est appliqué **côté serveur**, par les politiques RLS de
+PostgreSQL, indépendamment de ce qu'affiche l'application cliente (§10.4). Le
+filtrage de l'interface est un confort, jamais une protection.
+
+Les vues de consolidation sont déclarées `security_invoker` : sans cela, elles
+s'exécuteraient avec les droits de leur propriétaire et un compte d'école verrait
+le pays entier.
+
+## Consolidation
+
+Les agrégats sont calculés côté serveur (§10.1), jamais dans le navigateur :
+
+`v_conso_classe` → `v_conso_ecole` → `v_conso_up` → `v_conso_cs` → `v_conso_ddemp` → `v_conso_national`
+
+Le seuil de réussite provient du paramètre national. Des taux calculés sur des
+seuils différents ne seraient ni consolidables ni comparables (§6.3). La
+ventilation garçons / filles est systématique.
+
+## Fonctionnement hors connexion
+
+Exigence déterminante (§7.2) : de nombreuses écoles n'ont pas de connexion
+permanente.
+
+- Toutes les saisies fonctionnent sans réseau ; l'écriture locale a toujours lieu
+  d'abord, la remontée est opportuniste.
+- Les écritures faites hors ligne sont empilées et rejouées à la reconnexion.
+- L'état de synchronisation est affiché en permanence.
+- Les bibliothèques d'export sont mises en cache, pour que **PDF et Excel restent
+  disponibles hors ligne**.
+- À la déconnexion, les données du compte sont effacées du cache local : les
+  postes sont souvent partagés.
+
+## Arbitrages retenus par défaut
+
+Le cahier des charges (§13) laisse plusieurs points à la décision de l'autorité.
+Deux ont été tranchés provisoirement, selon l'option que le document recommande :
+
+- **Seuil de réussite** : fixé au niveau **national**, condition de comparabilité.
+- **Responsable d'unité pédagogique** : **sixième profil** distinct.
+
+Ces choix sont réversibles.
+
+## Reste à faire
+
+- Module d'administration des établissements et création des comptes (§6).
+- Synchronisation bidirectionnelle incrémentale avec règle de conflit
+  explicite (§10.2) — l'implémentation actuelle est une file d'attente simple.
+- Base locale dans l'appareil, en remplacement de `localStorage` (§10.1).
+- Migration relationnelle des modules ② à ⑯.
+- Modules 13 et 14 alimentés par les vues de consolidation plutôt que saisis.
+- Journalisation effective des consultations de données personnelles.
 
 ## Licence
 
