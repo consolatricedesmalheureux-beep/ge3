@@ -8,7 +8,7 @@ autour de l'élève et de la hiérarchie administrative :
 
 | Fichier | Description |
 |---------|-------------|
-| **`index.html`** | La plateforme, **connectée** à une base de données centrale Supabase : authentification réelle, données partagées entre tous les appareils, sécurité par rôle. |
+| **`index.html`** | La plateforme complète (16 modules). Données stockées localement dans le navigateur (localStorage). Accès libre, sans code ni compte. |
 
 ## Modules
 
@@ -20,18 +20,16 @@ Conversion PDF → tableau · Impression en masse (bulletins, cartes).
 
 ## Utilisation
 
-Ouvrir la plateforme dans un navigateur — connexion Internet requise. La configuration
-Supabase (URL + clé publique) est intégrée dans le fichier. L'administrateur crée la
-hiérarchie, les directeurs créent les enseignants, les enseignants enrôlent les élèves.
+Ouvrir la plateforme dans un navigateur. L'application s'ouvre directement, sans code
+d'accès ni compte.
 
 En ligne : <https://ge3.vercel.app>
 
-## Architecture cloud (Supabase)
+## Stockage des données
 
-- **PostgreSQL** : 13 tables reliées (hiérarchie, élèves, notes, modules annexes).
-- **Auth** : comptes email/mot de passe.
-- **RLS (Row Level Security)** : chaque rôle ne voit que son périmètre.
-- **Edge Functions** : création de comptes et réinitialisation de mots de passe sécurisées.
+Toutes les données (notes, élèves, signatures, cantine…) sont enregistrées dans le
+`localStorage` du navigateur. Elles restent donc sur l'appareil : rien n'est partagé
+entre postes, et vider les données du navigateur les efface.
 
 ## Licence
 
