@@ -85,8 +85,13 @@
   /* ─────────────────────── Module ⑬ École ─────────────────────── */
 
   function rendreEcole(hote, d) {
-    if (d.erreur) {
-      hote.innerHTML = '<p style="color:#c0392b;font-weight:bold;">' + esc(d.erreur) + '</p>';
+    /* Une réponse inattendue ne doit pas casser l'écran : mieux vaut un
+       message lisible qu'un module vide et une erreur en console. */
+    if (!d || typeof d !== 'object' || d.erreur || !Array.isArray(d.classes) || !d.total) {
+      hote.innerHTML =
+        '<p style="color:#c0392b;font-weight:bold;">' +
+        esc((d && d.erreur) || 'Réponse du serveur inexploitable. Réessayez ou signalez-le.') +
+        '</p>';
       return;
     }
     if (!d.classes.length) {
@@ -134,8 +139,11 @@
   /* ─────────────────────── Module ⑭ UP ─────────────────────── */
 
   function rendreUP(hote, d) {
-    if (d.erreur) {
-      hote.innerHTML = '<p style="color:#c0392b;font-weight:bold;">' + esc(d.erreur) + '</p>';
+    if (!d || typeof d !== 'object' || d.erreur || !Array.isArray(d.ecoles) || !d.total) {
+      hote.innerHTML =
+        '<p style="color:#c0392b;font-weight:bold;">' +
+        esc((d && d.erreur) || 'Réponse du serveur inexploitable. Réessayez ou signalez-le.') +
+        '</p>';
       return;
     }
     if (!d.ecoles.length) {

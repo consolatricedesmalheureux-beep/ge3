@@ -26,6 +26,7 @@ elle est constatée. Toutes les consolidations en découlent automatiquement : a
 | `assets/ge3-sync.js` | Synchronisation incrémentale et résolution des conflits |
 | `assets/ge3-admin.js` | Module ⑰ Administration : comptes et habilitations |
 | `assets/ge3-syntheses.js` | Modules ⑬ et ⑭ : consolidation calculée, appréciation rédigée |
+| `assets/ge3-etablissements.js` | Établissements (§6.1) et module ⑱ Tableau de bord |
 | `sw.js` | Service worker : fonctionnement hors connexion |
 | `manifest.webmanifest`, `icons/` | Installation sur l'appareil |
 
@@ -125,11 +126,12 @@ Ces choix sont réversibles.
 
 ## Reste à faire
 
-- Enregistrement des établissements (§6.1) : niveaux ouverts, nombre de classes
-  autorisées, statut du compte. La gestion des comptes est faite (module ⑰).
+- **Migration relationnelle des modules ② à ⑯.** Le module ① et les synthèses
+  ⑬ ⑭ sont branchés sur les tables ; les autres passent encore par le stockage
+  par compte, versionné et synchronisé, mais non consolidable entre écoles.
 - Base locale dans l'appareil, en remplacement de `localStorage` (§10.1).
-- Migration relationnelle des modules ② à ⑯.
-- Journalisation effective des consultations de données personnelles.
+- Interface de paramétrage du seuil national et du calendrier scolaire (§6.3).
+- Validation et signature des documents par le directeur (§7.5).
 
 ## Licence
 
