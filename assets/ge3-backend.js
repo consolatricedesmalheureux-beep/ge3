@@ -29,9 +29,13 @@
 
   const FILE_ATTENTE = 'ge3_sync_attente';
 
+  /* Les modules déjà migrés vers les tables relationnelles s'inscrivent ici.
+     Leur état ne doit plus transiter en bloc JSON : ce serait un doublon,
+     qui divergerait dès la première modification. */
   const estSynchronisable = (cle) =>
     typeof cle === 'string' &&
     !EXCLUES.has(cle) &&
+    !(GE3.clesRelationnelles && GE3.clesRelationnelles.has(cle)) &&
     PREFIXES.some((p) => cle.startsWith(p));
 
   const GE3 = {
@@ -39,6 +43,7 @@
     session: null,
     profil: null,
     enLigne: false,
+    clesRelationnelles: new Set(),
   };
   window.GE3 = GE3;
 
