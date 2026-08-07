@@ -23,6 +23,8 @@ elle est constatée. Toutes les consolidations en découlent automatiquement : a
 | `assets/ge3-backend.js` | Authentification, session, stockage cloud, file d'attente hors ligne |
 | `assets/ge3-saisie-cloud.js` | Module ① branché sur les tables relationnelles |
 | `assets/ge3-droits.js` | Matrice des droits d'accès (cahier des charges §5.1) |
+| `assets/ge3-sync.js` | Synchronisation incrémentale et résolution des conflits |
+| `assets/ge3-admin.js` | Module ⑰ Administration : comptes et habilitations |
 | `sw.js` | Service worker : fonctionnement hors connexion |
 | `manifest.webmanifest`, `icons/` | Installation sur l'appareil |
 
@@ -79,6 +81,23 @@ Le seuil de réussite provient du paramètre national. Des taux calculés sur de
 seuils différents ne seraient ni consolidables ni comparables (§6.3). La
 ventilation garçons / filles est systématique.
 
+## Règle de résolution des conflits
+
+Le §10.2 exige une règle « définie et documentée ». La voici.
+
+Chaque donnée porte un **numéro de version**. Le client annonce la version sur
+laquelle il s'est fondé. Si la version en base a changé depuis, l'écriture est
+**refusée** : la valeur écartée est conservée côté serveur, dans la table
+`conflits`, et l'utilisateur est informé. Il choisit alors laquelle fait foi, et
+son choix est inscrit au journal.
+
+**Aucune écriture n'écrase donc une autre à l'insu de son auteur.** Un enseignant
+revenant en ligne après une saisie hors connexion ne peut pas effacer sans le
+savoir le travail d'un collègue.
+
+La synchronisation est incrémentale dans les deux sens : seules les données
+modifiées circulent, la bande passante étant facturée à l'usage.
+
 ## Fonctionnement hors connexion
 
 Exigence déterminante (§7.2) : de nombreuses écoles n'ont pas de connexion
@@ -105,9 +124,8 @@ Ces choix sont réversibles.
 
 ## Reste à faire
 
-- Module d'administration des établissements et création des comptes (§6).
-- Synchronisation bidirectionnelle incrémentale avec règle de conflit
-  explicite (§10.2) — l'implémentation actuelle est une file d'attente simple.
+- Enregistrement des établissements (§6.1) : niveaux ouverts, nombre de classes
+  autorisées, statut du compte. La gestion des comptes est faite (module ⑰).
 - Base locale dans l'appareil, en remplacement de `localStorage` (§10.1).
 - Migration relationnelle des modules ② à ⑯.
 - Modules 13 et 14 alimentés par les vues de consolidation plutôt que saisis.
